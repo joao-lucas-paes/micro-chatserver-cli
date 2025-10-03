@@ -5,6 +5,6 @@ import (
 )
 
 type Client struct {
-	conn net.Conn
-	nick string
+	Conn net.Conn
+	Nick string
 }

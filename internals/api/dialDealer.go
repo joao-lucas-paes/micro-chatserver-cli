@@ -2,14 +2,14 @@ package api
 
 import (
 	"bufio"
-	"container/list"
+	"chatServer/internals/logger"
+	"chatServer/internals/rules"
+	"chatServer/internals/rules/syncdto"
 	"fmt"
 	"net"
 	"strings"
 	"sync"
 	"time"
-
-	"chatServer/internals/logger"
 )
 
 const (
@@ -23,7 +23,7 @@ const (
 	msgBadCommunication = "BAD COMMUNICATION THIS PORT ONLY SHOULD BE USED TO DEALER SERVER\n"
 )
 
-func dealer(l logger.Logger, listConn *list.List) error {
+func dealer(l logger.Logger, listConn *syncdto.SafeList[rules.Client]) error {
 	ctrlLn, err := net.Listen("tcp", ctrlAddr)
 	if err != nil {
 		l.Errorf("Failed to listen control addr %s: %v", ctrlAddr, err)
@@ -34,8 +34,6 @@ func dealer(l logger.Logger, listConn *list.List) error {
 
 	var portMu sync.Mutex
 	lastPort := initialPort
-
-	var listMu sync.Mutex
 
 	for {
 		conn, err := ctrlLn.Accept()
@@ -103,9 +101,15 @@ func dealer(l logger.Logger, listConn *list.List) error {
 				confirm = strings.TrimSpace(confirm)
 				if confirm == protocolConfirmOK {
 					// salvo o listener protegido por mutex
-					listMu.Lock()
-					listConn.PushBack(ln)
-					listMu.Unlock()
+					userConn, err := ln.Accept()
+					if err != nil {
+						l.Errorf("Error accepting connection: %v. The server will bump this negotiation.", err)
+						ln.Close()
+						return
+					}
+
+					listConn.PushItem(rules.Client{Conn: userConn, Nick: ""})
+					
 					l.Infof("Reserved and stored listener on %s", addr)
 					break
 				} else {

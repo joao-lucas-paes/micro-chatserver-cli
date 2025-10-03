@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-func loginMatch(login string) (string, int, bool) {
+func LoginMatch(login string) (string, int, bool) {
 	nick := ""
 	channel := -1
 	

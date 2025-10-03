@@ -1,14 +1,12 @@
 package rules
 
 import (
-
-)
-
-const (
-	maxClients = 1024 // maximo de clientes em cada canal
+	"chatServer/internals/rules/syncdto"
+	"container/list"
 )
 
 type Channel struct {
-	clients []Client
-	id string
+	Clients []list.List
+	MsgList *syncdto.SafeList[Msg]
+	Id string
 }

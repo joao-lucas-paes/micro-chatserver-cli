@@ -3,6 +3,7 @@ package logger
 import (
 	"io"
 	"os"
+	"sync"
 	"github.com/charmbracelet/log"
 )
 
@@ -34,25 +35,35 @@ func New(logfile string) (Logger, error) {
 			ReportCaller:    false,
 			ReportTimestamp: true,
 		}),
+		mu: sync.Mutex{},
 	}, nil
 }
 
 type defaultLogger struct {
 	logger log.Logger
+	mu sync.Mutex
 }
 
 func (l *defaultLogger) Println(message string) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
 	l.logger.Print(message)
 }
 
 func (l *defaultLogger) Infof(format string, args ...interface{}) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
 	l.logger.Infof(format, args...)
 }
 
 func (l *defaultLogger) Warnf(format string, args ...interface{}) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
 	l.logger.Warnf(format, args...)
 }
 
 func (l *defaultLogger) Errorf(format string, args ...interface{}) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
 	l.logger.Errorf(format, args...)
 }
