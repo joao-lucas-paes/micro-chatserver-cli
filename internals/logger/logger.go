@@ -15,22 +15,20 @@ import (
 //   - Infof: Logs an informational message with formatting.
 //   - Warnf: Logs a warning message with formatting.
 //   - Errorf: Logs an error message with formatting.
-type Logger interface {
-	Println(message string)
-	Infof(format string, args ...interface{})
-	Warnf(format string, args ...interface{})
-	Errorf(format string, args ...interface{})
+type Logger struct {
+	logger log.Logger
+	mu sync.Mutex
 }
 
 func New(logfile string) (Logger, error) {
 	file, err := os.OpenFile(logfile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
-		return nil, err
+		return Logger{}, err
 	}
 
 	std := io.MultiWriter(os.Stdout, file)
 
-	return &defaultLogger{
+	return Logger{
 		logger: *log.NewWithOptions(std, log.Options{
 			ReportCaller:    false,
 			ReportTimestamp: true,
@@ -39,30 +37,27 @@ func New(logfile string) (Logger, error) {
 	}, nil
 }
 
-type defaultLogger struct {
-	logger log.Logger
-	mu sync.Mutex
-}
 
-func (l *defaultLogger) Println(message string) {
+
+func (l *Logger) Println(message string, args ...interface{}) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	l.logger.Print(message)
+	l.logger.Print(message, args...)
 }
 
-func (l *defaultLogger) Infof(format string, args ...interface{}) {
+func (l *Logger) Infof(format string, args ...interface{}) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	l.logger.Infof(format, args...)
 }
 
-func (l *defaultLogger) Warnf(format string, args ...interface{}) {
+func (l *Logger) Warnf(format string, args ...interface{}) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	l.logger.Warnf(format, args...)
 }
 
-func (l *defaultLogger) Errorf(format string, args ...interface{}) {
+func (l *Logger) Errorf(format string, args ...interface{}) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	l.logger.Errorf(format, args...)

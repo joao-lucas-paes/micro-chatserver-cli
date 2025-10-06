@@ -8,24 +8,24 @@ import (
 	"strconv"
 )
 
-func LoginTalk(l logger.Logger, client rules.Client, channels *syncdto.SafeMap[rules.Channel]) {
-		reader := bufio.NewReader(client.Conn)
-    _, err := client.Conn.Write([]byte("Send your nick and the channel that you want to log in to\n"))
-    if err != nil {
-        l.Println("Error to send msg: " + err.Error())
-        return
-    }
+func LoginTalk(l *logger.Logger, client rules.Client, channels *syncdto.SafeMap[rules.Channel]) (string, int, bool) {
+  reader := bufio.NewReader(client.Conn)
+  _, err := client.Conn.Write([]byte("Send your nick and the channel that you want to log in to\n"))
+  if err != nil {
+    l.Errorf("Error to send msg: " + err.Error())
+    return "", -1, false
+  }
 
-    input, err := reader.ReadString('\n');
-    if err != nil {
-        l.Println("Error to read msg from client: " + err.Error())
-        return
-    }
+  input, err := reader.ReadString('\n');
+  if err != nil {
+    l.Errorf("Error to read msg from client: " + err.Error())
+    return "", -1, false
+  }
 
-    channel := -1
-		isLogged := false
-    input, channel, isLogged = rules.LoginMatch(input)
+  channel := -1
+  isLogged := false
+  input, channel, isLogged = rules.LoginMatch(input)
 
-    l.Println("Client response: {msg:" + input + ", channel:" + strconv.Itoa(channel) + ", isLogged: " + strconv.FormatBool(isLogged) + "}")
-
+  l.Infof("Client response: {msg:" + input + ", channel:" + strconv.Itoa(channel) + ", isLogged: " + strconv.FormatBool(isLogged) + "}")
+  return input, channel, isLogged
 }

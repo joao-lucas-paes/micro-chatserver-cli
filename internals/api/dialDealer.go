@@ -23,7 +23,7 @@ const (
 	msgBadCommunication = "BAD COMMUNICATION THIS PORT ONLY SHOULD BE USED TO DEALER SERVER\n"
 )
 
-func dealer(l logger.Logger, listConn *syncdto.SafeList[rules.Client]) error {
+func Dealer(l *logger.Logger, listConn *syncdto.SafeList[rules.Client]) error {
 	ctrlLn, err := net.Listen("tcp", ctrlAddr)
 	if err != nil {
 		l.Errorf("Failed to listen control addr %s: %v", ctrlAddr, err)
