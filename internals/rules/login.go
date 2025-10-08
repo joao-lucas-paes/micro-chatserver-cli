@@ -2,24 +2,14 @@ package rules
 
 import (
 	"regexp"
-	"strconv"
 )
 
-func LoginMatch(login string) (string, int, bool) {
-	nick := ""
-	channel := -1
-	
-	re := regexp.MustCompile(`^(\w+)\s+(\d+)$`)
+func LoginMatch(login string) (string, string, bool) {
+	re := regexp.MustCompile(`^(\w+)\s+(\w+)$`)
 	m := re.FindStringSubmatch(login)
 
 	if re.MatchString(login) {
-		nick = m[1]
-		channel_val, err := strconv.Atoi(m[2])
-		channel = channel_val
-		if err != nil {
-			return "", -1, false
-		}
+		return m[1], m[2], true
 	}
-
-	return nick, channel, true
+	return "", "", false
 }

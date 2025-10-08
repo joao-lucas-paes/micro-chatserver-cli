@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	ctrlAddr           = "127.0.0.1:6000"
+	addr           = "127.0.0.1:"
 	bufferReadTimeout  = 30 * time.Second
 	initialPort        = 32000
 	maxPortAttempts    = 10000
@@ -23,7 +23,8 @@ const (
 	msgBadCommunication = "BAD COMMUNICATION THIS PORT ONLY SHOULD BE USED TO DEALER SERVER\n"
 )
 
-func Dealer(l *logger.Logger, listConn *syncdto.SafeList[rules.Client]) error {
+func Dealer(l *logger.Logger, listConn *syncdto.SafeList[rules.Client], dealerPort string) error {
+	ctrlAddr := addr + dealerPort
 	ctrlLn, err := net.Listen("tcp", ctrlAddr)
 	if err != nil {
 		l.Errorf("Failed to listen control addr %s: %v", ctrlAddr, err)

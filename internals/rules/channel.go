@@ -1,21 +1,15 @@
 package rules
 
-import (
-	"container/list"
-)
-
 type Channel struct {
-	Clients []list.List
+	Clients []Client
 	msg 		chan Msg
 	Id     	string
 }
 
 
 func (c *Channel) ForEachClient(f func(client Client)) {
-	for _, clientList := range c.Clients {
-		for e := clientList.Front(); e != nil; e = e.Next() {
-			f(e.Value.(Client))
-		}
+	for _, client := range c.Clients {
+		f(client)
 	}
 }
 
@@ -35,26 +29,21 @@ func (c *Channel) GetMsgs() chan Msg {
 
 func NewChannel(id string) Channel {
 	return Channel{
-		Clients: make([]list.List, 0),
+		Clients: make([]Client, 0),
 		msg:     make(chan Msg, 64),
 		Id:      id,
 	}
 }
 
-func (c *Channel) AddClient(client Client, index int) {
-	if index >= len(c.Clients) {
-		c.Clients = append(c.Clients, list.List{})
-	}
-	c.Clients[index].PushBack(client)
+func (c *Channel) AddClient(client Client) {
+	c.Clients = append(c.Clients, client)
 }
 
 func (c *Channel) RemoveClient(client Client) {
 	for i := range c.Clients {
-		for e := c.Clients[i].Front(); e != nil; e = e.Next() {
-			if e.Value.(Client).Nick == client.Nick { 
-				c.Clients[i].Remove(e)
-				return
-			}
+		if c.Clients[i].Nick == client.Nick { 
+			c.Clients = append(c.Clients[:i], c.Clients[i+1:]...)
+			return
 		}
 	}
 }

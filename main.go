@@ -2,10 +2,12 @@ package main
 
 import (
 	"time"
+	"os"
 	"chatServer/internals/logger"
 	"chatServer/internals/rules"
 	"chatServer/internals/rules/syncdto"
 	"chatServer/internals/api"
+	"github.com/joho/godotenv"
 	"runtime"
 )
 
@@ -32,16 +34,24 @@ func printStats(log *logger.Logger, interval time.Duration) {
 }
 
 func main() {
+	
 	log, error_std = logger.New(time.Now().String() + ".log")
 	if error_std != nil {
 		panic(error_std)
 	}
+
+	err := godotenv.Load()
+  if err != nil {
+    log.Errorf("Error loading .env file")
+  }
 	
 	log.Infof("Server is starting")
 	clients := syncdto.NewSafeList[rules.Client]()
 	channels := syncdto.NewSafeMap[rules.Channel]()
 
-	go api.Dealer(&log, &clients)
+	PORT := os.Getenv("PORT")
+
+	go api.Dealer(&log, &clients, PORT)
 	log.Infof("Dealer started")
 	go api.ConnectionRead(&log, &clients, &channels)
 	log.Infof("Connection manager started")
