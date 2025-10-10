@@ -1,18 +1,20 @@
-## Chat Server
+# Chat Server
  
  A simple chat server written in Go, to make multiple clients able to communicate with each other in local network.
  
  ### How to run it? (it's easy!)
 
- 1. `git clone https://github.com/joao-lucas-paes/micro-chatserver-cli.git`
- 2. `cd micro-chatserver-cli`
- 3. `go build .`
- 4. `./chatServer`
- 5. And... have fun!
+ ```bash
+ git clone https://github.com/joao-lucas-paes/micro-chatserver-cli.git
+ cd micro-chatserver-cli
+ go build .
+ ./chatServer
+```
+ And... have fun!
 
- ### This project has Client!
+ ## This project has Client!
 
- - Status: developing...
+ - go to link: https://github.com/joao-lucas-paes/chatClient
  
- ### Pay attention:
- This project is just a simple server side application and it's was made by me to learn Go, so this is not an robust server or project.
+# ⚠️ Disclaimer
+This project is provided as-is, with no warranty or guarantee of functionality. It is not a product, only a study material for learning Golang and networking concepts.
