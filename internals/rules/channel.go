@@ -1,9 +1,12 @@
 package rules
 
+import "sync"
+
 type Channel struct {
 	Clients []Client
 	msg 		chan Msg
 	Id     	string
+	Mu 			*sync.Mutex
 }
 
 
@@ -32,6 +35,7 @@ func NewChannel(id string) Channel {
 		Clients: make([]Client, 0),
 		msg:     make(chan Msg, 64),
 		Id:      id,
+		Mu: 		 &sync.Mutex{},
 	}
 }
 

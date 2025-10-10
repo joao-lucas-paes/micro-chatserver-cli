@@ -1,15 +1,13 @@
 package rules
 
 import (
-	"regexp"
+	"strings"
 )
 
 func LoginMatch(login string) (string, string, bool) {
-	re := regexp.MustCompile(`^(\w+)\s+(\w+)$`)
-	m := re.FindStringSubmatch(login)
-
-	if re.MatchString(login) {
-		return m[1], m[2], true
+	fields := strings.Fields(login) // já faz Trim e split por whitespace
+	if len(fields) != 2 {
+		return "", "", false
 	}
-	return "", "", false
+	return fields[0], fields[1], true
 }

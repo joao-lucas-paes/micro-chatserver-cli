@@ -84,7 +84,7 @@ func Dealer(l *logger.Logger, listConn *syncdto.SafeList[rules.Client], dealerPo
 					continue
 				}
 
-				_, writeErr := c.Write([]byte(fmt.Sprintf("%s\n", addr)))
+				_, writeErr := c.Write([]byte(fmt.Sprintf("%d\n", port)))
 				if writeErr != nil {
 					l.Errorf("Error writing port to control connection: %v", writeErr)
 					ln.Close() // ta com vazamento, o close garante funcionamento

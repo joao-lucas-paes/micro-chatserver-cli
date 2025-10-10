@@ -11,7 +11,7 @@ type SafeList[T any] struct {
 
 type SafeMap[T any] struct {
 	mu     sync.Mutex
-	mapSys map[string]T
+	mapSys map[string]*T
 }
 
 func NewSafeList[T any]() SafeList[T] {
@@ -24,13 +24,13 @@ func NewSafeList[T any]() SafeList[T] {
 func NewSafeMap[T any]() SafeMap[T] {
 	return SafeMap[T]{
 		mu:     sync.Mutex{},
-		mapSys: make(map[string]T),
+		mapSys: make(map[string]*T),
 	}
 }
 
 func (s *SafeMap[T]) ForEach(f func(key string, channel T)) {
 	for key, value := range s.mapSys {
-		f(key, value)
+		f(key, *value)
 	}
 }
 
@@ -54,14 +54,14 @@ func (safeList *SafeList[T]) PopItem(index int) T {
 	return poppedItem
 }
 
-func (safeMap *SafeMap[T]) PushMap(key string, value T) {
+func (safeMap *SafeMap[T]) PushMap(key string, value *T) {
 	safeMap.mu.Lock()
 	defer safeMap.mu.Unlock()
 
 	safeMap.mapSys[key] = value
 }
 
-func (safeMap *SafeMap[T]) GetMap(key string) (T, bool) {
+func (safeMap *SafeMap[T]) GetMap(key string) (*T, bool) {
 	safeMap.mu.Lock()
 	defer safeMap.mu.Unlock()
 
