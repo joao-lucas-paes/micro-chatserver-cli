@@ -6,14 +6,13 @@ import (
 	"chatServer/internals/rules"
 	"chatServer/internals/rules/syncdto"
 	"fmt"
-	"strings"
 )
 
 func broadcastMessage(l *logger.Logger, channel *rules.Channel, msg *rules.Msg) {
 	for idx := range channel.Clients {
 		client := channel.Clients[idx]
 		if client.Nick == msg.User().Nick {
-			return
+			continue
 		}
 		_, err := client.Conn.Write([]byte(msg.User().Nick+":"+msg.Body()))
 		if err != nil {
@@ -52,11 +51,6 @@ func watcherUser(l *logger.Logger, client *rules.Client, channel *rules.Channel)
 			l.Errorf("Error reading from client %s: %v", client.Nick, err)
 			channel.RemoveClient(*client)
 			return
-		}
-
-		input = strings.TrimSpace(input)
-		if input == "" {
-			continue
 		}
 
 		msg := rules.NewMsg(*client, input)
