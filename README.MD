@@ -1,4 +1,4 @@
-# Chat Server
+# ChatServer 🖥
  
  A simple chat server written in Go, to make multiple clients able to communicate with each other in local network.
  
