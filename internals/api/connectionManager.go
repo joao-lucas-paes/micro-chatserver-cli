@@ -59,7 +59,7 @@ func watcherUser(l *logger.Logger, client *rules.Client, channel *rules.Channel)
 			l.Errorf("Channel %s is full, dropping msg from %s: %s", channel.Id, client.Nick, input)
 			_, errW := client.Conn.Write([]byte("<error>Buffer is full, try again later</error>\n"))
 			if errW != nil {
-				l.Errorf("Erro ao enviar erro pro cliente %s: %v", client.Nick, errW)
+				l.Errorf("Error to send to %s the msg: %v", client.Nick, errW)
 				channel.RemoveClient(*client)
 				return
 			}
